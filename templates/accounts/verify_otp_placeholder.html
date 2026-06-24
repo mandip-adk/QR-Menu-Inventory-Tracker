@@ -1,0 +1,24 @@
+{% extends "base/base.html" %}
+
+{% block title %}Verify Email – Sajilo Pasal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-12 col-sm-8 col-md-5 col-lg-4 text-center">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <i class="bi bi-envelope-check display-4" style="color: var(--sajilo-primary);"></i>
+        <h5 class="fw-bold mt-3">Check your email</h5>
+        <p class="text-muted small">
+          An OTP has been sent to your email address.<br>
+          Full verification will be enabled on <strong>Day 3</strong>.
+        </p>
+        <a href="{% url 'accounts:login' %}" class="btn btn-sajilo mt-2">
+          Back to Login
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

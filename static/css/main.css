@@ -1,0 +1,101 @@
+/* ============================================
+   Sajilo Pasal – Global Styles
+   Mobile-first, optimised for low-end Android
+   ============================================ */
+
+:root {
+  --sajilo-primary:    #2d6a4f;   /* forest green  */
+  --sajilo-secondary:  #52b788;   /* soft green    */
+  --sajilo-accent:     #f77f00;   /* warm orange   */
+  --sajilo-light:      #f8f9fa;
+  --sajilo-dark:       #1b1b1b;
+  --sajilo-muted:      #6c757d;
+}
+
+/* ── Typography ── */
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background-color: var(--sajilo-light);
+  color: var(--sajilo-dark);
+  font-size: 15px;
+}
+
+/* ── Buttons ── */
+.btn-sajilo {
+  background-color: var(--sajilo-primary);
+  color: #fff;
+  border: none;
+}
+.btn-sajilo:hover {
+  background-color: var(--sajilo-secondary);
+  color: #fff;
+}
+
+/* ── Card Shadows ── */
+.card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+}
+
+/* ── Navbar ── */
+.navbar-sajilo {
+  background-color: var(--sajilo-primary);
+}
+.navbar-sajilo .navbar-brand,
+.navbar-sajilo .nav-link {
+  color: #fff !important;
+}
+
+/* ── Product image placeholder ── */
+.product-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px 8px 0 0;
+}
+.product-img-placeholder {
+  width: 100%;
+  height: 160px;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  color: var(--sajilo-muted);
+  border-radius: 8px 8px 0 0;
+}
+
+/* ── Dashboard stat cards ── */
+.stat-card {
+  border-left: 4px solid var(--sajilo-accent);
+}
+.stat-card .stat-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--sajilo-primary);
+}
+
+/* ── Order status badges ── */
+.badge-pending    { background-color: #ffc107; color: #000; }
+.badge-preparing  { background-color: #0d6efd; color: #fff; }
+.badge-ready      { background-color: #198754; color: #fff; }
+.badge-cancelled  { background-color: #dc3545; color: #fff; }
+
+/* ── Low stock warning ── */
+.low-stock {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+/* ── Mobile touch targets ── */
+@media (max-width: 576px) {
+  .btn {
+    min-height: 44px;
+  }
+  .nav-link {
+    padding: 12px 16px;
+  }
+}
+
+

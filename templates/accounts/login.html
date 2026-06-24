@@ -1,0 +1,66 @@
+{% extends "base/base.html" %}
+
+{% block title %}Sign In – Sajilo Pasal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+  <div class="col-12 col-sm-10 col-md-6 col-lg-4">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <h4 class="fw-bold" style="color: var(--sajilo-primary);">
+            <i class="bi bi-box-arrow-in-right me-2"></i>Sign in to Sajilo Pasal
+          </h4>
+          <p class="text-muted small">Welcome back, manage your shop</p>
+        </div>
+
+        <!-- Form -->
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+              Email Address
+            </label>
+            {{ form.email }}
+            {% if form.email.errors %}
+              <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <!-- Password -->
+          <div class="mb-3">
+            <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">
+              Password
+            </label>
+            {{ form.password }}
+            {% if form.password.errors %}
+              <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-sajilo btn-lg fw-semibold">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+          </div>
+        </form>
+
+        <hr class="my-3">
+        <p class="text-center text-muted small mb-0">
+          No account yet?
+          <a href="{% url 'accounts:register' %}" class="fw-semibold text-decoration-none"
+             style="color: var(--sajilo-primary);">Create one</a>
+        </p>
+
+      </div>
+    </div><!-- /card -->
+
+  </div>
+</div>
+{% endblock %}
+

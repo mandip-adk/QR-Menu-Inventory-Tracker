@@ -1,0 +1,103 @@
+{% extends "base/base.html" %}
+
+{% block title %}Create Account – Sajilo Pasal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+  <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <h4 class="fw-bold" style="color: var(--sajilo-primary);">
+            <i class="bi bi-shop me-2"></i>Create your Sajilo Pasal account
+          </h4>
+          <p class="text-muted small">Manage your shop, menu and orders</p>
+        </div>
+
+        <!-- Form -->
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3">
+
+            <!-- First name -->
+            <div class="col-6">
+              <label for="{{ form.first_name.id_for_label }}" class="form-label fw-semibold">
+                First Name
+              </label>
+              {{ form.first_name }}
+              {% if form.first_name.errors %}
+                <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Last name -->
+            <div class="col-6">
+              <label for="{{ form.last_name.id_for_label }}" class="form-label fw-semibold">
+                Last Name
+              </label>
+              {{ form.last_name }}
+              {% if form.last_name.errors %}
+                <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="col-12">
+              <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                Email Address
+              </label>
+              {{ form.email }}
+              {% if form.email.errors %}
+                <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div class="col-12">
+              <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold">
+                Password
+              </label>
+              {{ form.password1 }}
+              {% if form.password1.errors %}
+                <div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <!-- Confirm password -->
+            <div class="col-12">
+              <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold">
+                Confirm Password
+              </label>
+              {{ form.password2 }}
+              {% if form.password2.errors %}
+                <div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+          </div><!-- /row -->
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-sajilo btn-lg fw-semibold">
+              <i class="bi bi-person-plus me-2"></i>Create Account
+            </button>
+          </div>
+        </form>
+
+        <hr class="my-3">
+        <p class="text-center text-muted small mb-0">
+          Already have an account?
+          <a href="{% url 'accounts:login' %}" class="fw-semibold text-decoration-none"
+             style="color: var(--sajilo-primary);">Sign in</a>
+        </p>
+
+      </div>
+    </div><!-- /card -->
+
+  </div>
+</div>
+{% endblock %}
+

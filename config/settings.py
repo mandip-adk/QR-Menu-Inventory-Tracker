@@ -166,7 +166,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
- 
+OTP_EXPIRY_MINUTES = 5
 # ─────────────────────────────────────────────
 # Login / Logout Redirects
 # ─────────────────────────────────────────────
