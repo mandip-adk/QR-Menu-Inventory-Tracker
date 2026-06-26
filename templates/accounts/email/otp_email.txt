@@ -1,0 +1,14 @@
+Hello {{ user.short_name }},
+
+Welcome to Sajilo Pasal!
+
+Your email verification code is:
+
+    {{ otp_code }}
+
+This code will expire in {{ expiry_minutes }} minutes.
+If you didn't request this, you can safely ignore this email.
+
+— Sajilo Pasal Team
+सजिलो पसल — Helping small Nepali shops go digital, easily.
+

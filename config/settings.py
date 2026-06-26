@@ -167,6 +167,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "accounts.User"
 OTP_EXPIRY_MINUTES = 5
+
+# ─────────────────────────────────────────────
+# Email Backend
+# ─────────────────────────────────────────────
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+    
 # ─────────────────────────────────────────────
 # Login / Logout Redirects
 # ─────────────────────────────────────────────

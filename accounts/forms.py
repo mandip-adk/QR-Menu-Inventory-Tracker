@@ -9,7 +9,7 @@ class RegistrationForm(forms.ModelForm):
     """
     Owner registration form.
     Password is validated against Django's AUTH_PASSWORD_VALIDATORS.
-    OTP is sent after successful save (Day 3).
+    OTP is sent after successful.
     """
 
     password1 = forms.CharField(
@@ -106,4 +106,31 @@ class LoginForm(forms.Form):
     def clean_email(self):
         return self.cleaned_data.get("email", "").lower().strip()
     
+
+class OTPVerificationForm(forms.Form):
+    """
+    6-digit OTP input.
+    Numeric-only, exactly 6 characters, rendered as a single text field
+    (kept simple rather than 6 separate boxes — easier on low-end devices).
+    """
+ 
+    otp_code = forms.CharField(
+        label="Verification Code",
+        min_length=6,
+        max_length=6,
+        widget=forms.TextInput(attrs={
+            "class": "form-control form-control-lg text-center",
+            "placeholder": "000000",
+            "autocomplete": "one-time-code",
+            "inputmode": "numeric",
+            "pattern": "[0-9]*",
+            "autofocus": True,
+        }),
+    )
+ 
+    def clean_otp_code(self):
+        code = self.cleaned_data.get("otp_code", "").strip()
+        if not code.isdigit():
+            raise forms.ValidationError("OTP must contain digits only.")
+        return code
     
