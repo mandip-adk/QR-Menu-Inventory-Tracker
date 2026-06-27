@@ -1,0 +1,89 @@
+{% extends "base/base.html" %}
+{% block title %}{% if is_edit %}Edit Shop{% else %}Create Shop{% endif %} – Sajilo Pasal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-3">
+  <div class="col-12 col-sm-10 col-md-7 col-lg-6">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <h4 class="fw-bold mb-3">
+          {% if is_edit %}
+            <i class="bi bi-pencil-square me-2"></i>Edit Shop
+          {% else %}
+            <i class="bi bi-shop me-2"></i>Create your Shop
+          {% endif %}
+        </h4>
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Shop Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}
+              <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Shop Type</label>
+            {{ form.shop_type }}
+            {% if form.shop_type.errors %}
+              <div class="text-danger small mt-1">{{ form.shop_type.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Logo</label>
+            {% if is_edit and shop.logo %}
+              <div class="mb-2">
+                <img src="{{ shop.logo.url }}" alt="Current logo" style="height: 60px; border-radius: 8px;">
+              </div>
+            {% endif %}
+            {{ form.logo }}
+            {% if form.logo.errors %}
+              <div class="text-danger small mt-1">{{ form.logo.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Phone Number</label>
+            {{ form.phone }}
+            {% if form.phone.errors %}
+              <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Address</label>
+            {{ form.address }}
+            {% if form.address.errors %}
+              <div class="text-danger small mt-1">{{ form.address.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+              <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-sajilo btn-lg fw-semibold">
+              {% if is_edit %}Save Changes{% else %}Create Shop{% endif %}
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

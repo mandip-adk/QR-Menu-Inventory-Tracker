@@ -1,0 +1,67 @@
+{% extends "base/base.html" %}
+{% block title %}{{ shop.name }} – Sajilo Pasal{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-3">
+  <div class="col-12 col-lg-8">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <div class="d-flex justify-content-between align-items-start mb-3">
+          <div>
+            <h4 class="fw-bold mb-1">{{ shop.name }}</h4>
+            <p class="text-muted mb-0">
+              {{ shop.get_shop_type_display }}
+              {% if shop.get_shop_type_display_nepali %}
+                · {{ shop.get_shop_type_display_nepali }}
+              {% endif %}
+            </p>
+          </div>
+          <a href="{% url 'shops:edit' shop.slug %}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-pencil me-1"></i>Edit
+          </a>
+        </div>
+
+        {% if shop.logo %}
+          <img src="{{ shop.logo.url }}" alt="{{ shop.name }} logo"
+               class="mb-3" style="max-height: 100px; border-radius: 8px;">
+        {% endif %}
+
+        <dl class="row">
+          <dt class="col-sm-3">Phone</dt>
+          <dd class="col-sm-9">{{ shop.phone|default:"—" }}</dd>
+
+          <dt class="col-sm-3">Address</dt>
+          <dd class="col-sm-9">{{ shop.address|default:"—" }}</dd>
+
+          <dt class="col-sm-3">Description</dt>
+          <dd class="col-sm-9">{{ shop.description|default:"—" }}</dd>
+
+          <dt class="col-sm-3">Menu URL</dt>
+          <dd class="col-sm-9">
+            <code>{{ shop.menu_url_path }}</code>
+            <span class="text-muted small">(public QR menu — built on Day 9)</span>
+          </dd>
+
+          <dt class="col-sm-3">Status</dt>
+          <dd class="col-sm-9">
+            {% if shop.is_active %}
+              <span class="badge bg-success">Active</span>
+            {% else %}
+              <span class="badge bg-secondary">Inactive</span>
+            {% endif %}
+          </dd>
+        </dl>
+
+        <a href="{% url 'shops:list' %}" class="btn btn-link text-decoration-none ps-0">
+          <i class="bi bi-arrow-left me-1"></i>Back to my shops
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

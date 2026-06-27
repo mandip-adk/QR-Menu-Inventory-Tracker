@@ -34,10 +34,6 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
 
-            # create_for_user now returns (otp, raw_code). raw_code lives
-            # only in this local variable, gets handed to the mailer, and
-            # is never written to the database — only its hash is stored
-            # on the otp row.
             otp, raw_code = EmailVerificationOTP.create_for_user(user)
             send_otp_email(user, raw_code)
 
@@ -60,8 +56,16 @@ def register_view(request):
 @require_http_methods(["GET", "POST"])
 def login_view(request):
     """
-    Authenticates with email + password.
-    Blocks unverified accounts with a clear message.
+    # Login with email + password:
+    - By default, Django blocks accounts that are not yet verified
+    -   (they are marked inactive). When this happens, Django just says
+    -   "login failed" without telling us why.
+    - That means an unverified user who types the correct password
+    -   looks the same as someone typing the wrong password.
+    - To avoid confusing people, we add an extra check:
+    -   if login fails, we look up the account directly and test the password.
+    -   If it matches, we can show the right message:
+    -   "Please verify your OTP" instead of "Invalid email or password."
     """
     if request.user.is_authenticated:
         return redirect("dashboard:home")
@@ -75,19 +79,26 @@ def login_view(request):
             user     = authenticate(request, username=email, password=password)
 
             if user is None:
+                # authenticate() failed — could be a genuinely wrong
+                # password/email, OR a correct password on an inactive
+                # (unverified) account, which ModelBackend always
+                # rejects regardless of password correctness.
+                unverified_user = _check_unverified_credentials(email, password)
+
+                if unverified_user is not None:
+                    request.session["pending_user_id"] = unverified_user.pk
+
+                    otp, raw_code = EmailVerificationOTP.create_for_user(unverified_user)
+                    send_otp_email(unverified_user, raw_code)
+
+                    messages.warning(
+                        request,
+                        "Your account is not verified yet. "
+                        "Please enter the OTP sent to your email."
+                    )
+                    return redirect("accounts:verify_otp")
+
                 messages.error(request, "Invalid email or password.")
-            elif not user.is_verified:
-                request.session["pending_user_id"] = user.pk
-
-                otp, raw_code = EmailVerificationOTP.create_for_user(user)
-                send_otp_email(user, raw_code)
-
-                messages.warning(
-                    request,
-                    "Your account is not verified yet. "
-                    "Please enter the OTP sent to your email."
-                )
-                return redirect("accounts:verify_otp")
             else:
                 login(request, user)
                 request.session.cycle_key()
@@ -98,6 +109,33 @@ def login_view(request):
             messages.error(request, "Please correct the errors below.")
 
     return render(request, "accounts/login.html", {"form": form})
+
+
+def _check_unverified_credentials(email, password):
+    """
+    # Manual password check for unverified accounts:
+    - Normally, Django refuses to check passwords for accounts
+    -   that are marked inactive (unverified). It just says "login failed."
+    - To avoid confusion, we do the password check ourselves:
+    -   if the password is correct, we know the account is fine but
+    -   still needs verification.
+    - This does NOT log the user in. It only helps us show the right
+    -   message ("Please verify your OTP") instead of the wrong one
+    -   ("Invalid email or password").
+    """
+    try:
+        candidate = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return None
+
+    if candidate.is_verified:
+        # They ARE verified but authenticate() still failed -> genuinely
+        # wrong password. Not our case to handle here.
+        return None
+
+    if candidate.check_password(password):
+        return candidate
+    return None
 
 
 # ─────────────────────────────────────────────
@@ -117,10 +155,7 @@ def logout_view(request):
 # ─────────────────────────────────────────────
 
 def _get_active_otp(user):
-    """
-    Returns the single active (is_used=False) OTP for a user.
-    create_for_user() guarantees at most one such row exists at a time.
-    """
+   
     return EmailVerificationOTP.objects.filter(user=user, is_used=False).first()
 
 
@@ -143,16 +178,13 @@ def verify_otp_view(request):
     """ OTP verification notes:
     - otp_code_hash is compared via otp.check_code(submitted_code), which
       hashes the submission and compares it to the stored hash using a
-      constant-time comparison. The raw code is never persisted and is
-      never compared with `==`.
-    - Lockout cooldown is tracked in the database (failed_attempts,
-      locked_until), not in the browser session.
+      constant-time comparison.
+    - Lockout cooldown is tracked in the database, not the session.
     - After MAX_ATTEMPTS_BEFORE_RETIRE wrong guesses, the OTP retires
-      itself (is_used=True) — there's no separate permanent-lock flag.
+      itself (is_used=True).
     - A daily per-user attempt ceiling caps total guesses across resends.
     - Verification runs inside transaction.atomic() with select_for_update()
-      on the OTP row, so two near-simultaneous submissions can't both
-      read is_used=False before either writes.
+      on the OTP row to prevent a race between near-simultaneous submissions.
     """
     user = _get_pending_user(request)
 
@@ -199,8 +231,6 @@ def verify_otp_view(request):
                 if not locked_otp.is_valid():
                     messages.error(request, "This OTP is no longer valid. Please request a new one.")
                 elif not locked_otp.check_code(submitted_code):
-                    # check_code() does the hash + constant-time compare —
-                    # never compare submitted_code to anything with `==`.
                     retired = locked_otp.record_failed_attempt()
                     if retired:
                         messages.error(
@@ -216,7 +246,6 @@ def verify_otp_view(request):
                             f"Please wait {wait}s before trying again."
                         )
                 else:
-                    # Success path
                     locked_otp.is_used = True
                     locked_otp.save(update_fields=["is_used"])
 
@@ -247,8 +276,7 @@ def verify_otp_view(request):
 def resend_otp_view(request):
     """
     Issues a fresh OTP for the pending user. Rate limiting is enforced
-    via the database (most recent OTP's created_at), tied to the user
-    account — not the session.
+    via the database, tied to the user account — not the session.
     """
     user = _get_pending_user(request)
 
