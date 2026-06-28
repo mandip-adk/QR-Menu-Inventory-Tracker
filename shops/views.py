@@ -10,9 +10,8 @@ from .forms import ShopForm
 @login_required
 def shop_list_view(request):
     """
-    Lists only the current user's own shops. There is no "browse all
-    shops" admin-style view here — ownership scoping starts at the
-    query, not as an afterthought permission check.
+    Lists only the current user's own shops. Ownership scoping starts
+    at the query, not as an afterthought permission check.
     """
     shops = Shop.objects.filter(owner=request.user)
     return render(request, "shops/shop_list.html", {"shops": shops})
