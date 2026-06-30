@@ -1,0 +1,84 @@
+{% extends "base/base.html" %}
+{% block title %}{% if is_edit %}Edit Product{% else %}Add Product{% endif %} – {{ category.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-3">
+  <div class="col-12 col-sm-10 col-md-7 col-lg-6">
+
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+
+        <h4 class="fw-bold mb-1">
+          {% if is_edit %}Edit Product{% else %}Add Product{% endif %}
+        </h4>
+        <p class="text-muted small mb-3">{{ category.name }} · {{ shop.name }}</p>
+
+        <form method="post" enctype="multipart/form-data" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Product Name</label>
+            {{ form.name }}
+            {% if form.name.errors %}<div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Description</label>
+            {{ form.description }}
+            {% if form.description.errors %}<div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Price (Rs.)</label>
+            {{ form.price }}
+            {% if form.price.errors %}<div class="text-danger small mt-1">{{ form.price.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Image</label>
+            {% if is_edit and product.image %}
+              <div class="mb-2"><img src="{{ product.image.url }}" style="height: 60px; border-radius: 8px;"></div>
+            {% endif %}
+            {{ form.image }}
+            {% if form.image.errors %}<div class="text-danger small mt-1">{{ form.image.errors.0 }}</div>{% endif %}
+            <div class="form-text">JPG, PNG, or WEBP. Max 5MB.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Stock Quantity</label>
+            {{ form.stock_quantity }}
+            {% if form.stock_quantity.errors %}<div class="text-danger small mt-1">{{ form.stock_quantity.errors.0 }}</div>{% endif %}
+          </div>
+
+          <div class="form-check mb-2">
+            {{ form.allow_over_order }}
+            <label class="form-check-label" for="{{ form.allow_over_order.id_for_label }}">
+              Allow ordering even when stock runs out (made-to-order items)
+            </label>
+          </div>
+
+          <div class="form-check mb-3">
+            {{ form.is_available }}
+            <label class="form-check-label" for="{{ form.is_available.id_for_label }}">
+              Available for ordering
+            </label>
+          </div>
+
+          <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-sajilo btn-lg fw-semibold">
+              {% if is_edit %}Save Changes{% else %}Add Product{% endif %}
+            </button>
+          </div>
+        </form>
+
+        <a href="{% url 'products:list' shop.slug category.id %}" class="btn btn-link text-decoration-none ps-0 mt-2">
+          <i class="bi bi-arrow-left me-1"></i>Back to products
+        </a>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
